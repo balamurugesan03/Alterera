@@ -1,47 +1,63 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { initiateRazorpayPayment } from '../utils/razorpay'
+import upiQR from "../images/WhatsApp Image 2025-12-03 at 19.03.26_cbd45ddd.jpg";
+
 
 function Register() {
+  const REGISTRATION_FEE = 2000; // Fixed registration fee
+
   const [formData, setFormData] = useState({
     name: '',
     degree: '',
     mobile: '',
     email: '',
     course: '',
-    amount: ''
+    courseFee: ''
   })
 
   const [message, setMessage] = useState({ type: '', text: '' })
   const [loading, setLoading] = useState(false)
+  const [showQR, setShowQR] = useState(false);
+
 
   const courses = [
-    { name: 'MERN Full Stack', fee: '50000' },
-    { name: 'Python Full Stack', fee: '45000' },
-    { name: 'Data Science', fee: '55000' },
-    { name: 'Java Full Stack', fee: '48000' },
-    { name: 'UI/UX Design', fee: '35000' },
-    { name: 'Digital Marketing', fee: '30000' }
+    { name: 'MERN Full Stack', fee: '5000' },
+    { name: 'Python Full Stack', fee: '4500' },
+    { name: 'Data Science', fee: '5500' },
+    { name: 'Java Full Stack', fee: '4800' },
+    { name: 'UI/UX Design', fee: '3500' },
+    { name: 'Digital Marketing', fee: '3000' }
   ]
 
   const handleChange = (e) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
 
-    // Auto-fill amount when course is selected
+    // If course is changed, update the course fee automatically
     if (name === 'course') {
       const selectedCourse = courses.find(c => c.name === value)
-      if (selectedCourse) {
-        setFormData(prev => ({
-          ...prev,
-          amount: selectedCourse.fee
-        }))
-      }
+      setFormData(prev => ({
+        ...prev,
+        [name]: value,
+        courseFee: selectedCourse ? selectedCourse.fee : ''
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        [name]: value
+      }))
     }
   }
+
+  const handlseSubmit = (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  // Show QR instead of Razorpay
+  setShowQR(true);
+};
+
 
   const validateForm = () => {
     if (!formData.name.trim()) {
@@ -64,95 +80,105 @@ function Register() {
       setMessage({ type: 'error', text: 'Please select a course' })
       return false
     }
-    if (!formData.amount) {
-      setMessage({ type: 'error', text: 'Please enter the amount' })
+    if (!formData.courseFee) {
+      setMessage({ type: 'error', text: 'Course fee is required' })
       return false
     }
     return true
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    setMessage({ type: '', text: '' })
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault()
+  //   setMessage({ type: '', text: '' })
 
-    if (!validateForm()) {
-      return
-    }
+  //   if (!validateForm()) {
+  //     return
+  //   }
 
-    setLoading(true)
+  //   setLoading(true)
 
-    try {
-      // Step 1: Create Razorpay order
-      const orderResponse = await axios.post('/api/payments/create-order', {
-        amount: formData.amount,
-        currency: 'INR',
-        receipt: `receipt_${Date.now()}`,
-        notes: {
-          name: formData.name,
-          email: formData.email,
-          course: formData.course
-        }
-      })
+  //   try {
+  //     // Step 1: Create Razorpay order for registration fee
+  //     const orderResponse = await axios.post('/api/payments/create-order', {
+  //       amount: REGISTRATION_FEE,
+  //       currency: 'INR',
+  //       receipt: `receipt_${Date.now()}`,
+  //       notes: {
+  //         name: formData.name,
+  //         email: formData.email,
+  //         course: formData.course,
+  //         type: 'registration_fee'
+  //       }
+  //     })
 
-      const { orderId, amount, currency, razorpayKey } = orderResponse.data
+  //     const { orderId, amount, currency, razorpayKey } = orderResponse.data
 
-      // Step 2: Initiate Razorpay payment
-      await initiateRazorpayPayment({
-        orderId,
-        amount,
-        currency,
-        name: formData.name,
-        email: formData.email,
-        mobile: formData.mobile,
-        courseName: formData.course,
-        razorpayKey,
-        onSuccess: async (paymentResponse) => {
-          // Step 3: Verify payment and complete registration
-          try {
-            const verifyResponse = await axios.post('/api/payments/verify', {
-              ...paymentResponse,
-              registrationData: formData
-            })
+  //     // Step 2: Initiate Razorpay payment
+  //     await initiateRazorpayPayment({
+  //       orderId,
+  //       amount: REGISTRATION_FEE,
+  //       currency,
+  //       name: formData.name,
+  //       email: formData.email,
+  //       mobile: formData.mobile,
+  //       courseName: formData.course,
+  //       razorpayKey,
+  //       onSuccess: async (paymentResponse) => {
+  //         // Step 3: Verify payment and complete registration
+  //         try {
+  //           const verifyResponse = await axios.post('/api/payments/verify', {
+  //             ...paymentResponse,
+  //             registrationData: formData
+  //           })
 
-            setMessage({
-              type: 'success',
-              text: 'Payment successful! Registration completed. We will contact you soon.'
-            })
+  //           setMessage({
+  //             type: 'success',
+  //             text: 'Registration fee payment successful! We will contact you soon with course details.'
+  //           })
 
-            // Reset form
-            setFormData({
-              name: '',
-              degree: '',
-              mobile: '',
-              email: '',
-              course: '',
-              amount: ''
-            })
-          } catch (verifyError) {
-            setMessage({
-              type: 'error',
-              text: verifyError.response?.data?.message || 'Payment verification failed. Please contact support.'
-            })
-          } finally {
-            setLoading(false)
-          }
-        },
-        onFailure: (errorMessage) => {
-          setMessage({
-            type: 'error',
-            text: errorMessage
-          })
-          setLoading(false)
-        }
-      })
-    } catch (error) {
-      setMessage({
-        type: 'error',
-        text: error.response?.data?.message || 'Failed to initiate payment. Please try again.'
-      })
-      setLoading(false)
-    }
-  }
+  //           // Reset form
+  //           setFormData({
+  //             name: '',
+  //             degree: '',
+  //             mobile: '',
+  //             email: '',
+  //             course: '',
+  //             courseFee: ''
+  //           })
+  //         } catch (verifyError) {
+  //           setMessage({
+  //             type: 'error',
+  //             text: verifyError.response?.data?.message || 'Payment verification failed. Please contact support.'
+  //           })
+  //         } finally {
+  //           setLoading(false)
+  //         }
+  //       },
+  //       onFailure: (errorMessage) => {
+  //         setMessage({
+  //           type: 'error',
+  //           text: errorMessage
+  //         })
+  //         setLoading(false)
+  //       }
+  //     })
+  //   } catch (error) {
+  //     setMessage({
+  //       type: 'error',
+  //       text: error.response?.data?.message || 'Failed to initiate payment. Please try again.'
+  //     })
+  //     setLoading(false)
+  //   }
+  // }
+  const handleSubmit = (e) => {
+  e.preventDefault();
+
+  if (!validateForm()) return;
+
+  // Show QR instead of Razorpay
+  setShowQR(true);
+};
+
 
   return (
     <div>
@@ -201,7 +227,7 @@ function Register() {
         lineHeight: "1.7"
       }}
     >
-      Fill out the form below to register for your desired course
+      Pay ₹2,000 registration fee to secure your spot. Course fee to be paid separately.
     </p>
   </div>
 </section>
@@ -289,23 +315,88 @@ function Register() {
           </div>
 
           <div className="form-group">
-            <label htmlFor="amount">Course Fee (₹) *</label>
+            <label htmlFor="courseFee">Course Fee *</label>
             <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={formData.amount}
-              onChange={handleChange}
-              placeholder="Course fee"
+              type="text"
+              id="courseFee"
+              name="courseFee"
+              value={formData.courseFee ? `₹${formData.courseFee}` : ''}
               readOnly
+              placeholder="Select a course to see the fee"
               required
+              style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
             />
           </div>
 
+          <div style={{
+            padding: '1.5rem',
+            background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            borderRadius: '12px',
+            marginBottom: '1.5rem',
+            color: 'white',
+            textAlign: 'center'
+          }}>
+            <h3 style={{ marginBottom: '0.5rem', fontSize: '1.5rem' }}>Registration Fee</h3>
+            <p style={{ fontSize: '2.5rem', fontWeight: 'bold', margin: '0.5rem 0' }}>₹2,000</p>
+            <p style={{ fontSize: '0.95rem', opacity: '0.9', margin: '0' }}>
+              Course fee will be paid separately after registration
+            </p>
+          </div>
+
           <button type="submit" className="btn btn-primary" disabled={loading} style={{ width: '100%' }}>
-            {loading ? 'Processing...' : 'Proceed to Payment'}
+            {loading ? 'Processing...' : 'Pay Registration Fee ₹2,000'}
           </button>
         </form>
+        {showQR && (
+  <div
+    style={{
+      position: "fixed",
+      inset: 0,
+      background: "rgba(0,0,0,0.7)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999
+    }}
+  >
+    <div
+      style={{
+        background: "white",
+        padding: "20px",
+        borderRadius: "12px",
+        textAlign: "center",
+        width: "90%",
+        maxWidth: "400px"
+      }}
+    >
+      <h2>Scan & Pay ₹2000</h2>
+      <img
+        src={upiQR}
+        alt="UPI QR Code"
+        style={{ width: "100%", borderRadius: "12px", margin: "20px 0" }}
+      />
+
+      <p style={{ fontSize: "1.1rem", fontWeight: "bold" }}>
+        UPI ID: <span style={{ color: "green" }}>ravipandey7786@ybl</span>
+      </p>
+
+      <button
+        onClick={() => setShowQR(false)}
+        style={{
+          marginTop: "20px",
+          background: "#333",
+          color: "white",
+          padding: "10px 20px",
+          borderRadius: "8px",
+          cursor: "pointer"
+        }}
+      >
+        Close
+      </button>
+    </div>
+  </div>
+)}
+
       </div>
       </div>
     </div>

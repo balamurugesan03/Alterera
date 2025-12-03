@@ -16,7 +16,7 @@ export const loadRazorpayScript = () => {
 
 export const initiateRazorpayPayment = async ({
   orderId,
-  amount,
+  amount = 2000,
   currency = 'INR',
   name,
   email,
@@ -33,12 +33,14 @@ export const initiateRazorpayPayment = async ({
     return
   }
 
+  const registrationFee = 2000;
+
   const options = {
     key: razorpayKey,
-    amount: amount * 100, 
+    amount: registrationFee * 100,
     currency: currency,
     name: 'Alterera Academy',
-    description: `Course Registration: ${courseName}`,
+    description: `Registration Fee${courseName ? ' - ' + courseName : ''}`,
     order_id: orderId,
     prefill: {
       name: name,
