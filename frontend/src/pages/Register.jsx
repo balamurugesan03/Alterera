@@ -12,8 +12,7 @@ function Register() {
     degree: '',
     mobile: '',
     email: '',
-    course: '',
-    courseFee: ''
+    course: ''
   })
 
   const [message, setMessage] = useState({ type: '', text: '' })
@@ -22,31 +21,20 @@ function Register() {
 
 
   const courses = [
-    { name: 'MERN Full Stack', fee: '' },
-    { name: 'Python Full Stack', fee: '' },
-    { name: 'Data Science', fee: '' },
-    { name: 'Java Full Stack', fee: '' },
-    { name: 'UI/UX Design', fee: '' },
-    { name: 'Digital Marketing', fee: '' }
+    'MERN Full Stack',
+    'Python Full Stack',
+    'Data Science',
+    'Java Full Stack',
+    'UI/UX Design',
+    'Digital Marketing'
   ]
 
   const handleChange = (e) => {
     const { name, value } = e.target
-
-    // If course is changed, update the course fee automatically
-    if (name === 'course') {
-      const selectedCourse = courses.find(c => c.name === value)
-      setFormData(prev => ({
-        ...prev,
-        [name]: value,
-        courseFee: selectedCourse ? selectedCourse.fee : ''
-      }))
-    } else {
-      setFormData(prev => ({
-        ...prev,
-        [name]: value
-      }))
-    }
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }))
   }
 
   const handlseSubmit = (e) => {
@@ -78,10 +66,6 @@ function Register() {
     }
     if (!formData.course) {
       setMessage({ type: 'error', text: 'Please select a course' })
-      return false
-    }
-    if (!formData.courseFee) {
-      setMessage({ type: 'error', text: 'Course fee is required' })
       return false
     }
     return true
@@ -142,8 +126,7 @@ function Register() {
   //             degree: '',
   //             mobile: '',
   //             email: '',
-  //             course: '',
-  //             courseFee: ''
+  //             course: ''
   //           })
   //         } catch (verifyError) {
   //           setMessage({
@@ -307,25 +290,11 @@ function Register() {
             >
               <option value="">-- Select a Course --</option>
               {courses.map((course, index) => (
-                <option key={index} value={course.name}>
-                  {course.name} - ₹{course.fee}
+                <option key={index} value={course}>
+                  {course}
                 </option>
               ))}
             </select>
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="courseFee">Course Fee *</label>
-            <input
-              type="text"
-              id="courseFee"
-              name="courseFee"
-              value={formData.courseFee ? `₹${formData.courseFee}` : ''}
-              readOnly
-              placeholder="Select a course to see the fee"
-              required
-              style={{ backgroundColor: '#f5f5f5', cursor: 'not-allowed' }}
-            />
           </div>
 
           <div style={{
