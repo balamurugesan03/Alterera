@@ -22,12 +22,12 @@ function Register() {
 
 
   const courses = [
-    { name: 'MERN Full Stack', fee: '5000' },
-    { name: 'Python Full Stack', fee: '4500' },
-    { name: 'Data Science', fee: '5500' },
-    { name: 'Java Full Stack', fee: '4800' },
-    { name: 'UI/UX Design', fee: '3500' },
-    { name: 'Digital Marketing', fee: '3000' }
+    { name: 'MERN Full Stack', fee: '' },
+    { name: 'Python Full Stack', fee: '' },
+    { name: 'Data Science', fee: '' },
+    { name: 'Java Full Stack', fee: '' },
+    { name: 'UI/UX Design', fee: '' },
+    { name: 'Digital Marketing', fee: '' }
   ]
 
   const handleChange = (e) => {

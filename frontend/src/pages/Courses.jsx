@@ -6,7 +6,7 @@ function Courses() {
       name: 'MERN Full Stack',
       description: 'Master the complete MERN stack - MongoDB, Express.js, React, and Node.js. Build modern, scalable web applications from scratch.',
       duration: '6 months',
-      fee: '₹50,000',
+      fee: '₹',
       icon: '🚀',
       highlights: ['Real Projects', 'Live Training', 'Interview Prep']
     },
@@ -14,7 +14,7 @@ function Courses() {
       name: 'Python Full Stack',
       description: 'Learn full-stack development with Python, Django/Flask, PostgreSQL, and front-end technologies. Perfect for aspiring developers.',
       duration: '6 months',
-      fee: '₹45,000',
+      fee: '₹',
       icon: '🐍',
       highlights: ['Django & Flask', 'REST APIs', 'Deployment']
     },
@@ -22,7 +22,7 @@ function Courses() {
       name: 'Data Science',
       description: 'Dive into data analytics, machine learning, and AI with Python. Learn pandas, NumPy, scikit-learn, and TensorFlow.',
       duration: '5 months',
-      fee: '₹55,000',
+      fee: '₹',
       icon: '📊',
       highlights: ['ML Algorithms', 'Data Analysis', 'AI Projects']
     },
@@ -30,7 +30,7 @@ function Courses() {
       name: 'Java Full Stack',
       description: 'Comprehensive Java development with Spring Boot, Hibernate, REST APIs, and modern front-end frameworks.',
       duration: '6 months',
-      fee: '₹48,000',
+      fee: '₹',
       icon: '☕',
       highlights: ['Spring Boot', 'Microservices', 'Cloud Deploy']
     },
@@ -38,7 +38,7 @@ function Courses() {
       name: 'UI/UX Design',
       description: 'Master user interface and user experience design. Learn Figma, Adobe XD, prototyping, and design thinking principles.',
       duration: '4 months',
-      fee: '₹35,000',
+      fee: '₹',
       icon: '🎨',
       highlights: ['Figma', 'User Research', 'Prototyping']
     },
@@ -46,7 +46,7 @@ function Courses() {
       name: 'Digital Marketing',
       description: 'Complete digital marketing training including SEO, SEM, social media marketing, content marketing, and analytics.',
       duration: '3 months',
-      fee: '₹30,000',
+      fee: '₹',
       icon: '📱',
       highlights: ['SEO/SEM', 'Social Media', 'Analytics']
     }
