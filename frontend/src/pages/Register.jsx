@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import axios from 'axios'
 import { initiateRazorpayPayment } from '../utils/razorpay'
-import upiQR from "../images/WhatsApp Image 2025-12-03 at 19.03.26_cbd45ddd.jpg";
+import upiQR from "../images/WhatsApp Image 2025-12-06 at 09.08.00_a0d837a4.jpg";
 
 
 function Register() {
